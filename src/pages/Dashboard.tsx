@@ -23,15 +23,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recurringFilter, setRecurringFilter] = useState("all");
-
-  // 🔥 ADDED FOR EDIT FEATURE
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  // Load tasks from backend
   const loadTasks = async () => {
     try {
       const token = localStorage.getItem("token");
-
       let url = `${API_URL}/api/tasks`;
 
       if (recurringFilter !== "all") {
@@ -39,9 +35,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
       }
 
       const res = await fetch(url, {
-        headers: {
-          Authorization: token || "",
-        },
+        headers: { Authorization: token || "" },
       });
 
       if (!res.ok) {
@@ -52,8 +46,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
       const data = await res.json();
 
       const sorted = data.sort((a: Task, b: Task) => {
-        const aOverdue = a.dueDate && !a.completed && new Date(a.dueDate) < new Date();
-        const bOverdue = b.dueDate && !b.completed && new Date(b.dueDate) < new Date();
+        const aOverdue =
+          a.dueDate && !a.completed && new Date(a.dueDate) < new Date();
+        const bOverdue =
+          b.dueDate && !b.completed && new Date(b.dueDate) < new Date();
         return Number(bOverdue) - Number(aOverdue);
       });
 
@@ -87,12 +83,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
     });
   }, [tasks]);
 
-  // 🔥 UPDATED: CREATE + EDIT BOTH
   const handleSaveTask = async (data: any) => {
     try {
       const token = localStorage.getItem("token");
 
-      // EDIT MODE
       if (editingTask) {
         const res = await fetch(`${API_URL}/api/tasks/${editingTask._id}`, {
           method: "PUT",
@@ -120,7 +114,6 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         return;
       }
 
-      // CREATE MODE (existing)
       const res = await fetch(`${API_URL}/api/tasks`, {
         method: "POST",
         headers: {
@@ -179,9 +172,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
       const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: token || "",
-        },
+        headers: { Authorization: token || "" },
       });
 
       if (!res.ok) {
@@ -210,9 +201,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-4xl mx-auto p-4 md:p-6">
-        <div className="flex justify-between items-start mb-8">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-4xl mx-auto p-4 md:p-6 h-full flex flex-col">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-start mb-6 flex-shrink-0">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">TaskFlow</h1>
             <p className="text-gray-600 mt-1">Your Tasks</p>
@@ -227,8 +220,8 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
           </button>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex gap-3 mb-6">
+        {/* FILTERS */}
+        <div className="flex gap-3 mb-6 flex-shrink-0">
           {["all", "daily", "weekly", "monthly"].map((type) => (
             <button
               key={type}
@@ -244,8 +237,8 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
           ))}
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* STATS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 flex-shrink-0">
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-gray-600 text-sm mb-1">Total Tasks</p>
             <p className="text-3xl font-bold text-gray-900">{tasks.length}</p>
@@ -260,9 +253,9 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
           </div>
         </div>
 
-        {/* Task Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="flex justify-between items-center mb-6">
+        {/* TASK LIST */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col flex-1 overflow-hidden">
+          <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-gray-900">Your Tasks</h2>
 
             <button
@@ -278,63 +271,65 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
           </div>
 
           {tasks.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 flex-1 flex items-center justify-center">
               <p className="text-gray-500 text-lg">
                 No tasks yet. Create one to get started.
               </p>
             </div>
           ) : (
-            tasks.map((task) => (
-              <div
-                key={task._id}
-                className={
-                  isOverdue(task.dueDate, task.completed)
-                    ? "border-l-4 border-red-500"
-                    : ""
-                }
-              >
-                <TaskItem
-                  id={task._id}
-                  title={task.title}
-                  description={task.description}
-                  completed={task.completed}
-                  dueDate={task.dueDate}
-                  recurring={task.recurring}
-                  onToggle={handleToggleTask}
-                  onEdit={(id) => {
-                    const found = tasks.find((t) => t._id === id);
-                    if (found) {
-                      setEditingTask(found);
-                      setIsModalOpen(true);
-                    }
-                  }}
-                  onDelete={handleDeleteTask}
-                />
-              </div>
-            ))
+            <div className="overflow-y-auto pr-2 flex-1">
+              {tasks.map((task) => (
+                <div
+                  key={task._id}
+                  className={
+                    isOverdue(task.dueDate, task.completed)
+                      ? "border-l-4 border-red-500"
+                      : ""
+                  }
+                >
+                  <TaskItem
+                    id={task._id}
+                    title={task.title}
+                    description={task.description}
+                    completed={task.completed}
+                    dueDate={task.dueDate}
+                    recurring={task.recurring}
+                    onToggle={handleToggleTask}
+                    onEdit={(id) => {
+                      const found = tasks.find((t) => t._id === id);
+                      if (found) {
+                        setEditingTask(found);
+                        setIsModalOpen(true);
+                      }
+                    }}
+                    onDelete={handleDeleteTask}
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
 
-<TaskModal
-  isOpen={isModalOpen}
-  task={
-    editingTask
-      ? {
-          id: editingTask._id,
-          title: editingTask.title,
-          description: editingTask.description,
-          dueDate: editingTask.dueDate,
-          recurring: editingTask.recurring,
-        }
-      : undefined
-  }
-  onClose={() => {
-    setIsModalOpen(false);
-    setEditingTask(null);
-  }}
-  onSave={handleSaveTask}
-/>
+        <TaskModal
+          isOpen={isModalOpen}
+          task={
+            editingTask
+              ? {
+                  id: editingTask._id,
+                  title: editingTask.title,
+                  description: editingTask.description,
+                  dueDate: editingTask.dueDate,
+                  recurring: editingTask.recurring,
+                }
+              : undefined
+          }
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingTask(null);
+          }}
+          onSave={handleSaveTask}
+        />
+      </div>
     </div>
   );
 };
