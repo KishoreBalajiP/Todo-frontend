@@ -8,9 +8,7 @@ import { useToast } from "./hooks/useToast";
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-
-  const { toasts, addToast, removeToast } =
-    useToast();
+  const { toasts, addToast, removeToast } = useToast();
 
   const [currentPage, setCurrentPage] = useState<
     "login" | "signup" | "dashboard"
@@ -19,37 +17,36 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const checkAuth = async () => {
-
       try {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-        const res = await fetch(
-          `${API_URL}/api/auth/me`,
-          { credentials: "include" }
-        );
-
-        if (res.ok)
+        if (res.ok) {
           setCurrentPage("dashboard");
-
-        else
+        } else {
           setCurrentPage("login");
-
-      } catch {
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
         setCurrentPage("login");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     checkAuth();
-
   }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <p>Checking session...</p>
       </div>
     );
   }

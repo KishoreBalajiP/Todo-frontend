@@ -24,24 +24,41 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      // STEP 1: Login request (sets cookies)
+      const loginRes = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await loginRes.json();
 
-      if (!res.ok) {
+      if (!loginRes.ok) {
         onToast(data.message || "Login failed", "error");
         return;
       }
 
+      // STEP 2: Verify session exists before navigation
+      const sessionCheck = await fetch(`${API_URL}/api/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!sessionCheck.ok) {
+        onToast("Session not created properly", "error");
+        return;
+      }
+
       onToast("Login successful!", "success");
+
+      // STEP 3: Navigate only after cookie confirmed
       onNavigate("dashboard");
 
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err);
       onToast("Server error", "error");
     } finally {
       setLoading(false);
@@ -67,6 +84,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
 
             <input
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
@@ -75,6 +93,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
 
             <input
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"

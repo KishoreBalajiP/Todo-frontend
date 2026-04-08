@@ -34,8 +34,18 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
       }
 
       const res = await fetch(url, {
+        method: "GET",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      if (res.status === 401) {
+        onToast("Session expired. Please login again.", "error");
+        onNavigate("login");
+        return;
+      }
 
       if (!res.ok) {
         onToast("Failed to load tasks", "error");
@@ -47,8 +57,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
       const sorted = data.sort((a: Task, b: Task) => {
         const aOverdue =
           a.dueDate && !a.completed && new Date(a.dueDate) < new Date();
+
         const bOverdue =
           b.dueDate && !b.completed && new Date(b.dueDate) < new Date();
+
         return Number(bOverdue) - Number(aOverdue);
       });
 
@@ -97,6 +109,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
           }
         );
 
+        if (res.status === 401) {
+          onNavigate("login");
+          return;
+        }
+
         if (!res.ok) {
           onToast("Failed to update task", "error");
           return;
@@ -122,6 +139,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         credentials: "include",
         body: JSON.stringify(data),
       });
+
+      if (res.status === 401) {
+        onNavigate("login");
+        return;
+      }
 
       if (!res.ok) {
         onToast("Error creating task", "error");
@@ -149,6 +171,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         body: JSON.stringify({ completed }),
       });
 
+      if (res.status === 401) {
+        onNavigate("login");
+        return;
+      }
+
       if (!res.ok) {
         onToast("Failed to update task", "error");
         return;
@@ -171,6 +198,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         credentials: "include",
       });
 
+      if (res.status === 401) {
+        onNavigate("login");
+        return;
+      }
+
       if (!res.ok) {
         onToast("Failed to delete task", "error");
         return;
@@ -184,10 +216,14 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
   };
 
   const handleLogout = async () => {
-    await fetch(`${API_URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
 
     onNavigate("login");
   };
@@ -226,49 +262,39 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
         {/* FILTERS */}
         <div className="flex gap-3 mb-6 flex-shrink-0">
-          {["all", "daily", "weekly", "monthly"].map(
-            (type) => (
-              <button
-                key={type}
-                onClick={() =>
-                  setRecurringFilter(type)
-                }
-                className={`px-4 py-1 rounded-lg capitalize ${
-                  recurringFilter === type
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {type}
-              </button>
-            )
-          )}
+          {["all", "daily", "weekly", "monthly"].map((type) => (
+            <button
+              key={type}
+              onClick={() => setRecurringFilter(type)}
+              className={`px-4 py-1 rounded-lg capitalize ${
+                recurringFilter === type
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {type}
+            </button>
+          ))}
         </div>
 
         {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 flex-shrink-0">
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">
-              Total Tasks
-            </p>
+            <p className="text-gray-600 text-sm mb-1">Total Tasks</p>
             <p className="text-3xl font-bold text-gray-900">
               {tasks.length}
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">
-              Active
-            </p>
+            <p className="text-gray-600 text-sm mb-1">Active</p>
             <p className="text-3xl font-bold text-blue-600">
               {activeCount}
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">
-              Completed
-            </p>
+            <p className="text-gray-600 text-sm mb-1">Completed</p>
             <p className="text-3xl font-bold text-green-600">
               {completedCount}
             </p>
@@ -306,10 +332,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
                 <div
                   key={task._id}
                   className={
-                    isOverdue(
-                      task.dueDate,
-                      task.completed
-                    )
+                    isOverdue(task.dueDate, task.completed)
                       ? "border-l-4 border-red-500"
                       : ""
                   }
@@ -323,9 +346,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
                     recurring={task.recurring}
                     onToggle={handleToggleTask}
                     onEdit={(id) => {
-                      const found = tasks.find(
-                        (t) => t._id === id
-                      );
+                      const found = tasks.find((t) => t._id === id);
                       if (found) {
                         setEditingTask(found);
                         setIsModalOpen(true);
@@ -346,11 +367,9 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
               ? {
                   id: editingTask._id,
                   title: editingTask.title,
-                  description:
-                    editingTask.description,
+                  description: editingTask.description,
                   dueDate: editingTask.dueDate,
-                  recurring:
-                    editingTask.recurring,
+                  recurring: editingTask.recurring,
                 }
               : undefined
           }
