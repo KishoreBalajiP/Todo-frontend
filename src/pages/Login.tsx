@@ -126,4 +126,4 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
   );
 };
 
-export default Login;
+export default Login; 
