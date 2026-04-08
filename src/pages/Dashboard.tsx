@@ -27,7 +27,6 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const loadTasks = async () => {
     try {
-      const token = localStorage.getItem("token");
       let url = `${API_URL}/api/tasks`;
 
       if (recurringFilter !== "all") {
@@ -35,7 +34,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
       }
 
       const res = await fetch(url, {
-        headers: { Authorization: token || "" },
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -85,17 +84,18 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleSaveTask = async (data: any) => {
     try {
-      const token = localStorage.getItem("token");
-
       if (editingTask) {
-        const res = await fetch(`${API_URL}/api/tasks/${editingTask._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token || "",
-          },
-          body: JSON.stringify(data),
-        });
+        const res = await fetch(
+          `${API_URL}/api/tasks/${editingTask._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(data),
+          }
+        );
 
         if (!res.ok) {
           onToast("Failed to update task", "error");
@@ -118,8 +118,8 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token || "",
         },
+        credentials: "include",
         body: JSON.stringify(data),
       });
 
@@ -140,14 +140,12 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleToggleTask = async (id: string, completed: boolean) => {
     try {
-      const token = localStorage.getItem("token");
-
       const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token || "",
         },
+        credentials: "include",
         body: JSON.stringify({ completed }),
       });
 
@@ -168,11 +166,9 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleDeleteTask = async (id: string) => {
     try {
-      const token = localStorage.getItem("token");
-
       const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         method: "DELETE",
-        headers: { Authorization: token || "" },
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -187,8 +183,12 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
     onNavigate("login");
   };
 
@@ -207,8 +207,12 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         {/* HEADER */}
         <div className="flex justify-between items-start mb-6 flex-shrink-0">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">TaskFlow</h1>
-            <p className="text-gray-600 mt-1">Your Tasks</p>
+            <h1 className="text-4xl font-bold text-gray-900">
+              TaskFlow
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Your Tasks
+            </p>
           </div>
 
           <button
@@ -222,41 +226,61 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
         {/* FILTERS */}
         <div className="flex gap-3 mb-6 flex-shrink-0">
-          {["all", "daily", "weekly", "monthly"].map((type) => (
-            <button
-              key={type}
-              onClick={() => setRecurringFilter(type)}
-              className={`px-4 py-1 rounded-lg capitalize ${
-                recurringFilter === type
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+          {["all", "daily", "weekly", "monthly"].map(
+            (type) => (
+              <button
+                key={type}
+                onClick={() =>
+                  setRecurringFilter(type)
+                }
+                className={`px-4 py-1 rounded-lg capitalize ${
+                  recurringFilter === type
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {type}
+              </button>
+            )
+          )}
         </div>
 
         {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 flex-shrink-0">
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">Total Tasks</p>
-            <p className="text-3xl font-bold text-gray-900">{tasks.length}</p>
+            <p className="text-gray-600 text-sm mb-1">
+              Total Tasks
+            </p>
+            <p className="text-3xl font-bold text-gray-900">
+              {tasks.length}
+            </p>
           </div>
+
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">Active</p>
-            <p className="text-3xl font-bold text-blue-600">{activeCount}</p>
+            <p className="text-gray-600 text-sm mb-1">
+              Active
+            </p>
+            <p className="text-3xl font-bold text-blue-600">
+              {activeCount}
+            </p>
           </div>
+
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-gray-600 text-sm mb-1">Completed</p>
-            <p className="text-3xl font-bold text-green-600">{completedCount}</p>
+            <p className="text-gray-600 text-sm mb-1">
+              Completed
+            </p>
+            <p className="text-3xl font-bold text-green-600">
+              {completedCount}
+            </p>
           </div>
         </div>
 
         {/* TASK LIST */}
         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col flex-1 overflow-hidden">
           <div className="flex justify-between items-center mb-6 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-gray-900">Your Tasks</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Your Tasks
+            </h2>
 
             <button
               onClick={() => {
@@ -282,7 +306,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
                 <div
                   key={task._id}
                   className={
-                    isOverdue(task.dueDate, task.completed)
+                    isOverdue(
+                      task.dueDate,
+                      task.completed
+                    )
                       ? "border-l-4 border-red-500"
                       : ""
                   }
@@ -296,7 +323,9 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
                     recurring={task.recurring}
                     onToggle={handleToggleTask}
                     onEdit={(id) => {
-                      const found = tasks.find((t) => t._id === id);
+                      const found = tasks.find(
+                        (t) => t._id === id
+                      );
                       if (found) {
                         setEditingTask(found);
                         setIsModalOpen(true);
@@ -317,9 +346,11 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
               ? {
                   id: editingTask._id,
                   title: editingTask.title,
-                  description: editingTask.description,
+                  description:
+                    editingTask.description,
                   dueDate: editingTask.dueDate,
-                  recurring: editingTask.recurring,
+                  recurring:
+                    editingTask.recurring,
                 }
               : undefined
           }

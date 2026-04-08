@@ -8,7 +8,9 @@ import { useToast } from "./hooks/useToast";
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-  const { toasts, addToast, removeToast } = useToast();
+
+  const { toasts, addToast, removeToast } =
+    useToast();
 
   const [currentPage, setCurrentPage] = useState<
     "login" | "signup" | "dashboard"
@@ -16,36 +18,32 @@ function App() {
 
   const [loading, setLoading] = useState(true);
 
-  // Check token on refresh
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("token");
 
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    const checkAuth = async () => {
 
       try {
-        const res = await fetch(`${API_URL}/api/auth/me`, {
-          headers: {
-            Authorization: token,
-          },
-        });
 
-        if (res.ok) {
+        const res = await fetch(
+          `${API_URL}/api/auth/me`,
+          { credentials: "include" }
+        );
+
+        if (res.ok)
           setCurrentPage("dashboard");
-        } else {
-          localStorage.removeItem("token");
-        }
+
+        else
+          setCurrentPage("login");
+
       } catch {
-        localStorage.removeItem("token");
+        setCurrentPage("login");
       }
 
       setLoading(false);
     };
 
     checkAuth();
+
   }, []);
 
   if (loading) {
@@ -59,18 +57,30 @@ function App() {
   return (
     <>
       {currentPage === "login" && (
-        <Login onNavigate={setCurrentPage} onToast={addToast} />
+        <Login
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
       )}
 
       {currentPage === "signup" && (
-        <Signup onNavigate={setCurrentPage} onToast={addToast} />
+        <Signup
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
       )}
 
       {currentPage === "dashboard" && (
-        <Dashboard onNavigate={setCurrentPage} onToast={addToast} />
+        <Dashboard
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
       )}
 
-      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <ToastContainer
+        toasts={toasts}
+        onClose={removeToast}
+      />
     </>
   );
 }

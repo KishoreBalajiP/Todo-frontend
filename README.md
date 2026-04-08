@@ -119,74 +119,124 @@ npm run preview
 ## 📁 Project Structure
 
 ```
-src/
+.
+├── Dockerfile                    # Docker container configuration
+│                                 # - Multi-stage build setup
+│                                 # - Node.js runtime environment
+│                                 # - Production optimization
 │
-├── components/
-│   ├── TaskItem.tsx              # Individual task card
-│   │                              # - Display task details
-│   │                              # - Toggle completion status
-│   │                              # - Edit & delete actions
-│   │                              # - Overdue task highlighting
-│   │
-│   ├── TaskModal.tsx             # Create/Edit task modal
-│   │                              # - Form for task input
-│   │                              # - Due date picker
-│   │                              # - Recurring options
-│   │
-│   ├── Toast.tsx                 # Single toast notification
-│   │                              # - Success/error display
-│   │                              # - Auto-dismiss functionality
-│   │
-│   └── ToastContainer.tsx        # Toast notification system
-│                                  # - Manages toast queue
-│                                  # - Handles positioning
+├── eslint.config.js             # ESLint configuration
+│                                 # - Code quality rules
+│                                 # - React and TypeScript rules
+│                                 # - Custom linting settings
 │
-├── hooks/
-│   └── useToast.ts               # Custom hook for toast notifications
-│                                  # - addToast method
-│                                  # - removeToast method
-│                                  # - Toast state management
+├── index.html                   # Main HTML template
+│                                 # - Vite entry point
+│                                 # - Meta tags and title
+│                                 # - Root div for React app
 │
-├── pages/
-│   ├── Login.tsx                 # User login authentication
-│   │                              # - Email/password input
-│   │                              # - Form validation
-│   │                              # - Token storage
-│   │
-│   ├── Signup.tsx                # User registration
-│   │                              # - New account creation
-│   │                              # - Password validation
-│   │                              # - Error handling
-│   │
-│   └── Dashboard.tsx             # Main task management interface
-│                                  # - Task list display
-│                                  # - Task operations (CRUD)
-│                                  # - Filtering & sorting
-│                                  # - Notification system
+├── package.json                 # Project dependencies and scripts
+│                                 # - npm package metadata
+│                                 # - Build and dev scripts
+│                                 # - Dependency versions
 │
-├── services/
-│   └── api.ts                    # Centralized API client
-│                                  # - Authentication endpoints
-│                                  # - Task CRUD operations
-│                                  # - Error responses
+├── postcss.config.js            # PostCSS configuration
+│                                 # - CSS processing pipeline
+│                                 # - Tailwind CSS integration
+│                                 # - Autoprefixer setup
 │
-├── App.tsx                       # Root application component
-│                                  # - Route management
-│                                  # - Auth state checking
-│                                  # - Global toast provider
+├── tailwind.config.js           # Tailwind CSS configuration
+│                                 # - Theme customization
+│                                 # - Color palette
+│                                 # - Responsive breakpoints
 │
-├── main.tsx                      # Application entry point
-│                                  # - React DOM initialization
-│                                  # - Strict mode configuration
+├── tsconfig.app.json            # TypeScript app configuration
+│                                 # - Application build settings
+│                                 # - Source file inclusion
+│                                 # - Type checking rules
 │
-├── index.css                     # Global stylesheet
-│                                  # - Base styles
-│                                  # - Tailwind directives
-│                                  # - CSS variables
+├── tsconfig.json                # Base TypeScript configuration
+│                                 # - Compiler options
+│                                 # - Module resolution
+│                                 # - Target ES version
 │
-└── vite-env.d.ts                 # Vite type definitions
-                                   # - Environment variable types
-                                   # - Build-time variable access
+├── tsconfig.node.json           # TypeScript Node.js configuration
+│                                 # - Build tool type checking
+│                                 # - Node.js environment settings
+│
+├── vite.config.ts               # Vite build configuration
+│                                 # - Development server setup
+│                                 # - React plugin configuration
+│                                 # - Build optimization
+│
+└── src/
+    │
+    ├── components/
+    │   ├── TaskItem.tsx              # Individual task card
+    │   │                              # - Display task details
+    │   │                              # - Toggle completion status
+    │   │                              # - Edit & delete actions
+    │   │                              # - Overdue task highlighting
+    │   │
+    │   ├── TaskModal.tsx             # Create/Edit task modal
+    │   │                              # - Form for task input
+    │   │                              # - Due date picker
+    │   │                              # - Recurring options
+    │   │
+    │   ├── Toast.tsx                 # Single toast notification
+    │   │                              # - Success/error display
+    │   │                              # - Auto-dismiss functionality
+    │   │
+    │   └── ToastContainer.tsx        # Toast notification system
+    │                                  # - Manages toast queue
+    │                                  # - Handles positioning
+    │
+    ├── hooks/
+    │   └── useToast.ts               # Custom hook for toast notifications
+    │                                  # - addToast method
+    │                                  # - removeToast method
+    │                                  # - Toast state management
+    │
+    ├── pages/
+    │   ├── Login.tsx                 # User login authentication
+    │   │                              # - Email/password input
+    │   │                              # - Form validation
+    │   │                              # - Token storage
+    │   │
+    │   ├── Signup.tsx                # User registration
+    │   │                              # - New account creation
+    │   │                              # - Password validation
+    │   │                              # - Error handling
+    │   │
+    │   └── Dashboard.tsx             # Main task management interface
+    │                                  # - Task list display
+    │                                  # - Task operations (CRUD)
+    │                                  # - Filtering & sorting
+    │                                  # - Notification system
+    │
+    ├── services/
+    │   └── api.ts                    # Centralized API client
+    │                                  # - Authentication endpoints
+    │                                  # - Task CRUD operations
+    │                                  # - Error responses
+    │
+    ├── App.tsx                       # Root application component
+    │                                  # - Route management
+    │                                  # - Auth state checking
+    │                                  # - Global toast provider
+    │
+    ├── main.tsx                      # Application entry point
+    │                                  # - React DOM initialization
+    │                                  # - Strict mode configuration
+    │
+    ├── index.css                     # Global stylesheet
+    │                                  # - Base styles
+    │                                  # - Tailwind directives
+    │                                  # - CSS variables
+    │
+    └── vite-env.d.ts                 # Vite type definitions
+                                       # - Environment variable types
+                                       # - Build-time variable access
 ```
 
 ---
@@ -291,7 +341,30 @@ Token invalid → Route to Login
 - **Authentication:** `Authorization: <token>` header
 - **Error Handling:** User-friendly toast notifications
 
+### API Endpoints
+
+#### Authentication Endpoints
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| `POST` | `/api/auth/signup` | Register new user | `{ "email": "string", "password": "string" }` | `{ "token": "string", "user": {...} }` |
+| `POST` | `/api/auth/login` | User login | `{ "email": "string", "password": "string" }` | `{ "token": "string", "user": {...} }` |
+| `GET` | `/api/auth/me` | Verify token and get user info | - | `{ "user": {...} }` |
+
+#### Task Management Endpoints
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| `GET` | `/api/tasks` | Get all tasks (optional `?recurring=daily/weekly/monthly`) | - | `[ { "id": "string", "title": "string", "completed": boolean, ... } ]` |
+| `POST` | `/api/tasks` | Create new task | `{ "title": "string", "description": "string", "dueDate": "ISO string", "recurring": "string" }` | `{ "id": "string", ... }` |
+| `PUT` | `/api/tasks/{id}` | Update task (full update) | `{ "title": "string", "description": "string", "completed": boolean, ... }` | `{ "id": "string", ... }` |
+| `PUT` | `/api/tasks/{id}` | Toggle task completion | `{ "completed": boolean }` | `{ "id": "string", ... }` |
+| `DELETE` | `/api/tasks/{id}` | Delete task | - | `{ "message": "Task deleted" }` |
+
+**Authentication:** All task endpoints require `Authorization: Bearer <token>` header
+**Base URL:** Configured via `VITE_API_URL` environment variable
+
 ---
+
+## ✨ Features Explained
 
 ## ✨ Features Explained
 

@@ -27,6 +27,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -37,11 +38,10 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
-      localStorage.setItem("token", data.token);
-
       onToast("Login successful!", "success");
       onNavigate("dashboard");
-    } catch (err) {
+
+    } catch {
       onToast("Server error", "error");
     } finally {
       setLoading(false);
@@ -52,6 +52,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
+
           <div className="flex justify-center mb-6">
             <div className="bg-blue-100 p-3 rounded-full">
               <CheckCircle className="text-blue-600" size={32} />
@@ -63,6 +64,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
           </h1>
 
           <form onSubmit={handleLogin} className="space-y-4">
+
             <input
               type="email"
               value={email}
@@ -86,6 +88,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
             >
               {loading ? "Logging in..." : "Login"}
             </button>
+
           </form>
 
           <p className="text-center mt-4">
@@ -97,6 +100,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
               Sign up
             </button>
           </p>
+
         </div>
       </div>
     </div>
