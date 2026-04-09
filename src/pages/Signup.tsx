@@ -143,6 +143,7 @@ const Signup = ({ onNavigate, onToast }: SignupProps) => {
           onSubmit={handleSignup}
           className="space-y-4"
         >
+
           {/* Email */}
           <div>
             <label className="text-sm text-gray-600">
@@ -198,18 +199,20 @@ const Signup = ({ onNavigate, onToast }: SignupProps) => {
               </button>
             </div>
 
-            {/* Strength Indicator */}
-            <p
-              className={`text-xs mt-1 ${
-                passwordStrength === "strong"
-                  ? "text-green-600"
-                  : passwordStrength === "medium"
-                  ? "text-yellow-600"
-                  : "text-red-500"
-              }`}
-            >
-              Password strength: {passwordStrength}
-            </p>
+            {/* Strength Indicator (ONLY after typing) */}
+            {password.length > 0 && (
+              <p
+                className={`text-xs mt-1 ${
+                  passwordStrength === "strong"
+                    ? "text-green-600"
+                    : passwordStrength === "medium"
+                    ? "text-yellow-600"
+                    : "text-red-500"
+                }`}
+              >
+                Password strength: {passwordStrength}
+              </p>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -272,6 +275,7 @@ const Signup = ({ onNavigate, onToast }: SignupProps) => {
               ? "Creating account..."
               : "Sign up"}
           </button>
+
         </form>
 
         {/* Footer */}

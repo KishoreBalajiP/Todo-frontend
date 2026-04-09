@@ -4,6 +4,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ToastContainer from "./components/ToastContainer";
 import { useToast } from "./hooks/useToast";
+import ChangePassword from "./pages/ChangePassword";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,7 +12,7 @@ function App() {
   const { toasts, addToast, removeToast } = useToast();
 
   const [currentPage, setCurrentPage] = useState<
-    "login" | "signup" | "dashboard"
+    "login" | "signup" | "dashboard" | "change-password"
   >("login");
 
   const [loading, setLoading] = useState(true);
@@ -73,6 +74,13 @@ function App() {
           onToast={addToast}
         />
       )}
+
+      {currentPage === "change-password" && (
+       <ChangePassword
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
+  )}
 
       <ToastContainer
         toasts={toasts}

@@ -3,7 +3,7 @@ import { CheckCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 
 interface LoginProps {
-  onNavigate: (page: "login" | "signup" | "dashboard") => void;
+  onNavigate: (page: "login" | "signup" | "dashboard" | "change-password") => void;
   onToast: (message: string, type: "success" | "error") => void;
 }
 
@@ -84,7 +84,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
-      onToast("Welcome back 👋", "success");
+      onToast("Welcome back", "success");
       onNavigate("dashboard");
 
     } catch (err) {
@@ -120,7 +120,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
-      onToast("Logged in with Google 🚀", "success");
+      onToast("Logged in with Google", "success");
       onNavigate("dashboard");
 
     } catch (err) {
@@ -208,8 +208,9 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
             </label>
 
             <button
-              type="button"
-              className="text-blue-600 hover:underline"
+                type="button"
+                onClick={() => onNavigate("change-password")}
+                className="text-blue-600 hover:underline"
             >
               Forgot password?
             </button>
