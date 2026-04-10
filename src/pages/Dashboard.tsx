@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { LogOut, Plus } from "lucide-react";
 import TaskItem from "../components/TaskItem";
 import TaskModal from "../components/TaskModal";
+import SubscribeModal from "../components/SubscribeModal";
 
 interface Task {
   _id: string;
@@ -24,6 +25,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recurringFilter, setRecurringFilter] = useState("all");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+
+  // NEW: subscription flag (frontend-only for now)
+  const [isSubscribed] = useState(false);
 
   const loadTasks = async () => {
     try {
@@ -128,6 +133,12 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         onToast("Task updated!", "success");
         setEditingTask(null);
         setIsModalOpen(false);
+        return;
+      }
+
+      // NEW: block task creation after 5 tasks
+      if (!isSubscribed && tasks.length >= 5) {
+        onToast("Free plan limit reached. Please subscribe.", "error");
         return;
       }
 
@@ -308,16 +319,37 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
               Your Tasks
             </h2>
 
-            <button
-              onClick={() => {
-                setEditingTask(null);
-                setIsModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-            >
-              <Plus size={18} />
-              New Task
-            </button>
+            <div className="flex gap-3">
+
+              <button
+                onClick={() => {
+                  if (!isSubscribed && tasks.length >= 5) {
+                    onToast(
+                      "Free plan limit reached. Please subscribe.",
+                      "error"
+                    );
+                    return;
+                  }
+
+                  setEditingTask(null);
+                  setIsModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              >
+                <Plus size={18} />
+                New Task
+              </button>
+
+              {!isSubscribed && tasks.length >= 5 && (
+                <button
+                  onClick={() => setIsSubscribeOpen(true)}
+                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+                >
+                  Subscribe
+                </button>
+              )}
+
+            </div>
           </div>
 
           {tasks.length === 0 ? (
@@ -378,6 +410,10 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
             setEditingTask(null);
           }}
           onSave={handleSaveTask}
+        />
+        <SubscribeModal
+          isOpen={isSubscribeOpen}
+          onClose={() => setIsSubscribeOpen(false)}
         />
       </div>
     </div>
