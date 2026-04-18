@@ -30,7 +30,7 @@ const ChangePassword = ({ onToast, onNavigate }: Props) => {
       setLoading(true);
 
       const res = await fetch(
-        `${API_URL}/api/auth/change-password`,
+        `${API_URL}/auth/change-password`,
         {
           method: "PUT",
           headers: {
@@ -50,7 +50,7 @@ const ChangePassword = ({ onToast, onNavigate }: Props) => {
         return onToast(data.message, "error");
       }
 
-      onToast("Password updated successfully 🔐", "success");
+      onToast("Password updated successfully ", "success");
 
       onNavigate("login");
 

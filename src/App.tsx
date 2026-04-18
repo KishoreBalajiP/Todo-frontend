@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/auth/me`, {
+        const res = await fetch(`${API_URL}/auth/me`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -76,11 +76,11 @@ function App() {
       )}
 
       {currentPage === "change-password" && (
-       <ChangePassword
+        <ChangePassword
           onNavigate={setCurrentPage}
           onToast={addToast}
         />
-  )}
+      )}
 
       <ToastContainer
         toasts={toasts}

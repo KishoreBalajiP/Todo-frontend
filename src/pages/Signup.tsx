@@ -67,7 +67,7 @@ const Signup = ({ onNavigate, onToast }: SignupProps) => {
       setLoading(true);
 
       const res = await fetch(
-        `${API_URL}/api/auth/signup`,
+        `${API_URL}/auth/signup`,
         {
           method: "POST",
           headers: {

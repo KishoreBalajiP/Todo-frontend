@@ -54,7 +54,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
     try {
       setLoading(true);
 
-      const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+      const loginRes = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
-      const sessionCheck = await fetch(`${API_URL}/api/auth/me`, {
+      const sessionCheck = await fetch(`${API_URL}/auth/me`, {
         method: "GET",
         credentials: "include",
       });
@@ -102,7 +102,7 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_URL}/api/auth/google`, {
+      const res = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
