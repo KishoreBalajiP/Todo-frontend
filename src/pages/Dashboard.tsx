@@ -32,7 +32,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const loadTasks = async () => {
     try {
-      let url = `${API_URL}/api/tasks`;
+      let url = `${API_URL}/tasks`;
 
       if (recurringFilter !== "all") {
         url += `?recurring=${recurringFilter}`;
@@ -103,7 +103,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
     try {
       if (editingTask) {
         const res = await fetch(
-          `${API_URL}/api/tasks/${editingTask._id}`,
+          `${API_URL}/tasks/${editingTask._id}`,
           {
             method: "PUT",
             headers: {
@@ -142,7 +142,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
         return;
       }
 
-      const res = await fetch(`${API_URL}/api/tasks`, {
+      const res = await fetch(`${API_URL}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +173,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleToggleTask = async (id: string, completed: boolean) => {
     try {
-      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -204,7 +204,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleDeleteTask = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/tasks/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
