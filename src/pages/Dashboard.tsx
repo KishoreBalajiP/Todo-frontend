@@ -228,7 +228,7 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/api/auth/logout`, {
+      await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

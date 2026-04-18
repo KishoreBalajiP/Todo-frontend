@@ -18,7 +18,7 @@ const SubscribeModal = ({ isOpen, onClose }: Props) => {
       setLoading(true);
 
       const res = await fetch(
-        `${API_URL}/api/payment/create-order`,
+        `${API_URL}/payment/create-order`,
         {
           method: "POST",
           credentials: "include",
@@ -37,7 +37,7 @@ const SubscribeModal = ({ isOpen, onClose }: Props) => {
 
         handler: async (response: any) => {
           await fetch(
-            `${API_URL}/api/payment/verify-payment`,
+            `${API_URL}/payment/verify-payment`,
             {
               method: "POST",
               credentials: "include",
