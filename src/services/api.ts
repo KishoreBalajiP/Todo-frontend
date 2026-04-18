@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const api = {
   signup: async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/signup`, {
+    const res = await fetch(`${API_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -12,7 +12,7 @@ export const api = {
   },
 
   login: async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -22,7 +22,7 @@ export const api = {
   },
 
   getTasks: async (token: string) => {
-    const res = await fetch(`${API_URL}/api/tasks`, {
+    const res = await fetch(`${API_URL}/tasks`, {
       headers: {
         Authorization: token,
       },
@@ -32,7 +32,7 @@ export const api = {
   },
 
   createTask: async (data: any, token: string) => {
-    const res = await fetch(`${API_URL}/api/tasks`, {
+    const res = await fetch(`${API_URL}/tasks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
