@@ -89,4 +89,4 @@ export default function VerifyMfa({ onNavigate, onToast }: Props) {
 
     </div>
   );
-}
+} 
