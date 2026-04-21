@@ -6,6 +6,7 @@ import ToastContainer from "./components/ToastContainer";
 import { useToast } from "./hooks/useToast";
 import ChangePassword from "./pages/ChangePassword";
 import VerifyMfa from "./pages/VerifyMfa";
+import SetupMfa from "./pages/SetupMfa"; //NEW IMPORT
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -19,6 +20,7 @@ function App() {
     | "dashboard"
     | "change-password"
     | "verify-mfa"
+    | "setup-mfa" //NEW PAGE TYPE
   >("login");
 
   const [loading, setLoading] = useState(true);
@@ -100,6 +102,14 @@ function App() {
 
       {currentPage === "verify-mfa" && (
         <VerifyMfa
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
+      )}
+
+      {/* NEW MFA SETUP PAGE */}
+      {currentPage === "setup-mfa" && (
+        <SetupMfa
           onNavigate={setCurrentPage}
           onToast={addToast}
         />

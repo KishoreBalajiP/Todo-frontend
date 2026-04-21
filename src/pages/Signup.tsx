@@ -92,7 +92,7 @@ const Signup = ({ onNavigate, onToast }: SignupProps) => {
       }
 
       onToast(
-        "Account created successfully 🎉",
+        "Account created successfully",
         "success"
       );
 

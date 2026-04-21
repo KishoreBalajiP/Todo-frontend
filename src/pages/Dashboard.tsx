@@ -14,7 +14,7 @@ interface Task {
 }
 
 interface DashboardProps {
-  onNavigate: (page: "login" | "signup" | "dashboard") => void;
+  onNavigate: (page: "login" | "signup" | "dashboard" | "setup-mfa") => void;
   onToast: (message: string, type: "success" | "error") => void;
 }
 
@@ -29,6 +29,38 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
 
   // NEW: subscription flag (frontend-only for now)
   const [isSubscribed] = useState(false);
+  const enableMfa = async () => {
+
+  try {
+
+    const res = await fetch(
+      `${API_URL}/auth/mfa/setup`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      onToast("Failed to generate QR", "error");
+      return;
+    }
+
+    sessionStorage.setItem("mfaQr", data.qrCode);
+
+    onNavigate("setup-mfa");
+
+  } catch (err) {
+
+    console.error(err);
+
+    onToast("Unable to start MFA setup", "error");
+
+  }
+
+};
 
   const loadTasks = async () => {
     try {
@@ -262,13 +294,24 @@ const Dashboard = ({ onNavigate, onToast }: DashboardProps) => {
             </p>
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg"
-          >
-            <LogOut size={18} />
-            Logout
-          </button>
+<div className="flex gap-2">
+
+  <button
+    onClick={enableMfa}
+    className="px-4 py-2 bg-green-600 text-white rounded-lg"
+  >
+    Enable MFA
+  </button>
+
+  <button
+    onClick={handleLogout}
+    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg"
+  >
+    <LogOut size={18} />
+    Logout
+  </button>
+
+</div>
         </div>
 
         {/* FILTERS */}
