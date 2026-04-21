@@ -3,23 +3,33 @@ import { CheckCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 
 interface LoginProps {
-  onNavigate: (page: "login" | "signup" | "dashboard" | "change-password") => void;
+  onNavigate: (
+    page:
+      | "login"
+      | "signup"
+      | "dashboard"
+      | "change-password"
+      | "verify-mfa"
+  ) => void;
   onToast: (message: string, type: "success" | "error") => void;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = ({ onNavigate, onToast }: LoginProps) => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
   // ===============================
   // FORM VALIDATION
   // ===============================
   const validateForm = () => {
+
     if (!email.trim()) {
       onToast("Email is required", "error");
       return false;
@@ -43,15 +53,18 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
     return true;
   };
 
+
   // ===============================
   // EMAIL LOGIN
   // ===============================
   const handleLogin = async (e: React.FormEvent) => {
+
     e.preventDefault();
 
     if (!validateForm()) return;
 
     try {
+
       setLoading(true);
 
       const loginRes = await fetch(`${API_URL}/auth/login`, {
@@ -74,6 +87,21 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
+      // ===============================
+      // NEW: MFA CHECK
+      // ===============================
+      if (data.mfaRequired) {
+
+        sessionStorage.setItem("mfaUserId", data.userId);
+
+        onNavigate("verify-mfa");
+
+        return;
+      }
+
+      // ===============================
+      // SESSION VALIDATION
+      // ===============================
       const sessionCheck = await fetch(`${API_URL}/auth/me`, {
         method: "GET",
         credentials: "include",
@@ -85,21 +113,30 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
       }
 
       onToast("Welcome back", "success");
+
       onNavigate("dashboard");
 
     } catch (err) {
+
       console.error(err);
+
       onToast("Unable to connect to server", "error");
+
     } finally {
+
       setLoading(false);
+
     }
   };
+
 
   // ===============================
   // GOOGLE LOGIN
   // ===============================
   const handleGoogleSuccess = async (credentialResponse: any) => {
+
     try {
+
       setLoading(true);
 
       const res = await fetch(`${API_URL}/auth/google`, {
@@ -120,18 +157,38 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
         return;
       }
 
+      // ===============================
+      // NEW: MFA CHECK
+      // ===============================
+      if (data.mfaRequired) {
+
+        sessionStorage.setItem("mfaUserId", data.userId);
+
+        onNavigate("verify-mfa");
+
+        return;
+      }
+
       onToast("Logged in with Google", "success");
+
       onNavigate("dashboard");
 
     } catch (err) {
+
       console.error(err);
+
       onToast("Google login failed", "error");
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
+
   return (
+
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
 
       <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
@@ -152,12 +209,14 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
           Sign in to continue managing your tasks
         </p>
 
+
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-4">
 
           {/* Email */}
           <div>
             <label className="text-sm text-gray-600">Email</label>
+
             <input
               type="email"
               autoComplete="email"
@@ -169,11 +228,14 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
             />
           </div>
 
+
           {/* Password */}
           <div>
+
             <label className="text-sm text-gray-600">Password</label>
 
             <div className="relative">
+
               <input
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
@@ -189,10 +251,14 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
                 className="absolute right-3 top-3 text-gray-500"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword
+                  ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+
             </div>
+
           </div>
+
 
           {/* Remember me */}
           <div className="flex items-center justify-between text-sm">
@@ -208,14 +274,15 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
             </label>
 
             <button
-                type="button"
-                onClick={() => onNavigate("change-password")}
-                className="text-blue-600 hover:underline"
+              type="button"
+              onClick={() => onNavigate("change-password")}
+              className="text-blue-600 hover:underline"
             >
               Forgot password?
             </button>
 
           </div>
+
 
           {/* Submit */}
           <button
@@ -223,11 +290,19 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
             disabled={loading}
             className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
           >
-            {loading && <Loader2 className="animate-spin" size={18} />}
-            {loading ? "Signing in..." : "Sign in"}
+
+            {loading && (
+              <Loader2 className="animate-spin" size={18} />
+            )}
+
+            {loading
+              ? "Signing in..."
+              : "Sign in"}
+
           </button>
 
         </form>
+
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-5">
@@ -236,25 +311,32 @@ const Login = ({ onNavigate, onToast }: LoginProps) => {
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
+
         {/* Google Login Button */}
         <div className="flex justify-center">
+
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => {
               onToast("Google Sign-in failed", "error");
             }}
           />
+
         </div>
+
 
         {/* Footer */}
         <p className="text-center mt-6 text-sm text-gray-600">
+
           Don’t have an account?{" "}
+
           <button
             onClick={() => onNavigate("signup")}
             className="text-blue-600 font-medium hover:underline"
           >
             Create account
           </button>
+
         </p>
 
       </div>

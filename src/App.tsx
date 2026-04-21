@@ -5,21 +5,30 @@ import Dashboard from "./pages/Dashboard";
 import ToastContainer from "./components/ToastContainer";
 import { useToast } from "./hooks/useToast";
 import ChangePassword from "./pages/ChangePassword";
+import VerifyMfa from "./pages/VerifyMfa";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
+
   const { toasts, addToast, removeToast } = useToast();
 
   const [currentPage, setCurrentPage] = useState<
-    "login" | "signup" | "dashboard" | "change-password"
+    | "login"
+    | "signup"
+    | "dashboard"
+    | "change-password"
+    | "verify-mfa"
   >("login");
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const checkAuth = async () => {
+
       try {
+
         const res = await fetch(`${API_URL}/auth/me`, {
           method: "GET",
           credentials: "include",
@@ -33,15 +42,22 @@ function App() {
         } else {
           setCurrentPage("login");
         }
+
       } catch (err) {
+
         console.error("Auth check failed:", err);
         setCurrentPage("login");
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     checkAuth();
+
   }, []);
 
   if (loading) {
@@ -77,6 +93,13 @@ function App() {
 
       {currentPage === "change-password" && (
         <ChangePassword
+          onNavigate={setCurrentPage}
+          onToast={addToast}
+        />
+      )}
+
+      {currentPage === "verify-mfa" && (
+        <VerifyMfa
           onNavigate={setCurrentPage}
           onToast={addToast}
         />
