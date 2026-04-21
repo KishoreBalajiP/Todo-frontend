@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 
 interface Props {
   onNavigate: (
@@ -24,7 +24,6 @@ export default function SetupMfa({
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // QR stored from Dashboard after calling /mfa/setup
   const qrCode = sessionStorage.getItem("mfaQr");
 
   const handleVerifySetup = async (
@@ -92,57 +91,113 @@ export default function SetupMfa({
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
 
-      <form
-        onSubmit={handleVerifySetup}
-        className="bg-white shadow-lg rounded-xl p-8 w-96"
-      >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
 
-        <h2 className="text-xl font-bold mb-4 text-center">
-          Setup Multi-Factor Authentication
-        </h2>
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
 
-        <p className="text-gray-600 text-sm mb-4 text-center">
-          Scan this QR code using Google Authenticator
+        {/* Icon */}
+        <div className="flex justify-center mb-5">
+          <div className="bg-blue-100 p-3 rounded-full">
+            <ShieldCheck className="text-blue-600" size={32} />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h1 className="text-3xl font-bold text-center text-gray-900">
+          Enable Two-Factor Authentication
+        </h1>
+
+        <p className="text-center text-gray-500 mb-6">
+          Scan the QR code using Google Authenticator or any OTP app
         </p>
 
+
+        {/* QR Code */}
         {qrCode ? (
-          <img
-            src={qrCode}
-            alt="MFA QR"
-            className="mx-auto mb-4"
-          />
+          <div className="flex justify-center mb-6">
+            <img
+              src={qrCode}
+              alt="MFA QR"
+              className="rounded-lg border p-2 shadow-sm"
+            />
+          </div>
         ) : (
           <p className="text-red-500 text-sm text-center mb-4">
             QR code not found. Restart setup.
           </p>
         )}
 
-        <input
-          type="text"
-          placeholder="Enter 6-digit code"
-          value={code}
-          onChange={(e) =>
-            setCode(
-              e.target.value
-                .replace(/\D/g, "")
-                .slice(0, 6)
-            )
-          }
-          className="border w-full p-2 rounded mb-4"
-        />
 
-        <button
-          disabled={loading}
-          className="bg-blue-600 text-white w-full py-2 rounded flex justify-center items-center"
+        {/* Form */}
+        <form
+          onSubmit={handleVerifySetup}
+          className="space-y-4"
         >
-          {loading
-            ? <Loader2 className="animate-spin" />
-            : "Verify & Enable MFA"}
-        </button>
 
-      </form>
+          <div>
+            <label className="text-sm text-gray-600">
+              Enter verification code
+            </label>
+
+            <input
+              type="text"
+              placeholder="123456"
+              maxLength={6}
+              value={code}
+              disabled={loading}
+              onChange={(e) =>
+                setCode(
+                  e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 6)
+                )
+              }
+              className="w-full mt-1 px-4 py-2 border rounded-lg text-center tracking-widest text-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+
+          </div>
+
+
+          {/* Submit */}
+          <button
+            disabled={loading}
+            className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+          >
+
+            {loading && (
+              <Loader2
+                className="animate-spin"
+                size={18}
+              />
+            )}
+
+            {loading
+              ? "Verifying..."
+              : "Verify & Enable MFA"}
+
+          </button>
+
+        </form>
+
+
+        {/* Footer */}
+        <p className="text-center mt-6 text-sm text-gray-600">
+
+          Changed your mind?{" "}
+
+          <button
+            onClick={() =>
+              onNavigate("dashboard")
+            }
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Go back to dashboard
+          </button>
+
+        </p>
+
+      </div>
 
     </div>
   );
